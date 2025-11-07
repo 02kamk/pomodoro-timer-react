@@ -1,6 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
 
-.timer, 
-.tasks{
+*{
+    box-sizing: border-box;
+}
+
+html{
+    font-size: 16px;
+}
+
+body{
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    margin: 0;
+    padding: 0;
+}
+
+h1{
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 60px;
+}
+
+button{
+    background: none;
+    border: none;
+}
+
+.container{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.counter__box,
+.timer{
     width: 50%;
     padding: 50px 75px;
 }
@@ -12,18 +47,31 @@
      url('https://github.com/lucasbeskow/clock/blob/main/forest.jpg?raw=true') 50% / cover no-repeat;
 }
 
-.counter{
-    flex-grow: 1;
-    align-content: center;
-}
 
-#clock{
-    font-size: 8rem;
-    font-weight: 900;
-}
-
-.cicle{
-    font-size: 1.6rem;
+.btn-link{
+    font-size: 1.4rem;
     font-weight: 700;
-    padding: 16px;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+.btn-large{
+    font-size: 3rem;
+    padding: 16px 32px;
+}
+
+.btn-alt{
+    background-color: #9EE200;
+    border-color: #9EE200;
+    color: var(--color-primary);
+}
+
+.btn-active,
+.btn-link:hover{
+    background-color: black;
+    color: white;
+}
+
+.hidden{
+    display: none;
 }

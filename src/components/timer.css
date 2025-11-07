@@ -1,0 +1,16 @@
+
+.counter{
+    flex-grow: 1;
+    align-content: center;
+}
+
+.clock{
+    font-size: 8rem;
+    font-weight: 900;
+}
+
+.cicle{
+    font-size: 1.6rem;
+    font-weight: 700;
+    padding: 16px;
+}
