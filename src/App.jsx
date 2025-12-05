@@ -1,94 +1,121 @@
-import { useState, useEffect, useRef } from 'react';
-import TimerLib from 'easytimer.js'; 
-import './App.css'
+import React, { useState, useEffect, useRef } from 'react';
+import './App.css'; 
 
-import Button from './components/button'
-import Timer from './components/timer'
-import Counter from './components/counter';
+// DEFINIÇÃO DOS TEMPOS (EM SEGUNDOS)
+const POMODORO_TIMES = {
+  pomodoro: 25 * 60, // 25 minutos
+  short: 5 * 60,     // 5 minutos
+  long: 15 * 60,    // 15 minutos
+};
 
+// Componente para os botões de modo (para Modularidade!)
+const TimerModes = ({ mode, setMode }) => {
+  return (
+    <div className="timer-modes">
+      {Object.keys(POMODORO_TIMES).map((key) => (
+        <button
+          key={key}
+          onClick={() => setMode(key)}
+          className={mode === key ? 'active' : ''}
+        >
+          {key.charAt(0).toUpperCase() + key.slice(1).replace('-', ' ')}
+        </button>
+      ))}
+    </div>
+  );
+};
 
 function App() {
-  const [time, setTime] = useState('25:00');
-  const [cycle, setCycle] = useState('pomodoro');
+  // Estado para o modo atual ('pomodoro', 'short', 'long')
+  const [mode, setMode] = useState('pomodoro');
+  
+  // Estado do tempo restante (inicializa com o tempo do modo atual)
+  const [timeLeft, setTimeLeft] = useState(POMODORO_TIMES[mode]);
+  
   const [isRunning, setIsRunning] = useState(false);
+  const timerRef = useRef(null); 
 
-  const timerRef = useRef(null);
-
-  // Inicializa o timer apenas uma vez
+  // --- Efeito que redefine o tempo quando o MODO muda ---
   useEffect(() => {
-    timerRef.current = new TimerLib();
-  }, []);
-
-  const startTimer = () => {
+    // 1. Para o timer antigo
     if (timerRef.current) {
-      timerRef.current.start({
-        countdown: true,
-        startValues: { minutes: time },
-      });
-
-      timerRef.current.addEventListener('secondsUpdated', () => {
-        setTime(timerRef.current.getTimeValues().toString(['minutes', 'seconds']));
-      });
-
-      setIsRunning(true);
+      clearInterval(timerRef.current);
     }
-  };
-
-  const pauseTimer = () => {
-    timerRef.current.pause();
+    // 2. Reseta o estado
     setIsRunning(false);
+    // 3. Define o novo tempo inicial
+    setTimeLeft(POMODORO_TIMES[mode]);
+
+  }, [mode]); // Roda sempre que o 'mode' muda!
+
+
+  // --- Lógica do Contador (Mantida) ---
+  useEffect(() => {
+    if (isRunning && timeLeft > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft(prevTime => prevTime - 1);
+      }, 1000);
+
+      return () => clearInterval(timerRef.current);
+    }
+    
+    if (timeLeft === 0) {
+      clearInterval(timerRef.current);
+      setIsRunning(false);
+      // Aqui você pode adicionar lógica para mudar para o próximo modo automaticamente!
+    }
+
+  }, [isRunning, timeLeft]); 
+
+  // --- Funções de Controle ---
+  const handleStartPause = () => {
+    setIsRunning(prev => !prev); 
   };
 
-  const stopTimer = () => {
-    timerRef.current.stop();
-    setTime('25:00');
+  const handleReset = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
     setIsRunning(false);
+    setTimeLeft(POMODORO_TIMES[mode]); // Reseta para o tempo do modo atual
   };
 
-  const frutas = ["Maça", "Laranja", "Uva"];
+  // --- Função de Formatação ---
+  const formatTime = (totalSeconds) => {
+    const currentSeconds = Math.max(0, totalSeconds); 
+    const minutes = Math.floor(currentSeconds / 60);
+    const seconds = currentSeconds % 60;
+    
+    const paddedMinutes = String(minutes).padStart(2, '0');
+    const paddedSeconds = String(seconds).padStart(2, '0');
+    
+    return `${paddedMinutes}:${paddedSeconds}`;
+  };
 
+  const displayTime = formatTime(timeLeft);
 
+  // --- O que aparece na tela (Renderização) ---
   return (
-    <>
-      <div className="container">
+    <div className="container">
+      {/* NOVO: Componente para mudar os modos */}
+      <TimerModes mode={mode} setMode={setMode} /> 
 
-        <div className="timer">
-
-            <div>
-                <h1>Pomodoro 2025.2</h1>
-
-                <Button onClick={() => {setTime('25:00'); setCycle('pomodoro')}} label="Pomodoro" isLink isActive={cycle == 'pomodoro'}/>
-                <Button onClick={() => {setTime('05:00'); setCycle('curta')}} label="Pausa curta" isLink isActive={cycle == 'curta'} />
-                <Button onClick={() => {setTime('15:00'); setCycle('longa')}} label="Pausa longa" isLink isActive={cycle == 'longa'} />
-
-            </div>
-            <Timer time={time}/>
-
-            <div>
-                {!isRunning ? (
-                  <Button onClick={startTimer} label="Iniciar" isLink isLarge isActive />
-                ) : (
-                  <Button onClick={pauseTimer} label="Parar" isLink isLarge isActive />
-                )}
-                <Button onClick={stopTimer} label="Finalizar" isLink />
-            </div>
-        </div>
-
-        <div className='counter__box'>
-
-          <Counter />
-
-          <br />
-          <br />
-          <br />
-
-          <Counter />
-
-        </div>
-
+      {/* Exibe o tempo */}
+      <div className="time-display">
+        {displayTime}
       </div>
-    </>
-  )
+
+      {/* Botões de Controle */}
+      <div className="controls">
+        <button onClick={handleStartPause}>
+          {isRunning ? 'PAUSAR' : 'INICIAR'}
+        </button>
+        <button onClick={handleReset}>
+          REINICIAR
+        </button>
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
