@@ -1,6 +1,4 @@
-/* Paleta de Cores - Design Minimalista e Calmante */
 :root {
-    /* Cores suaves para concentração */
     --bg-primary: #fef6f3;
     --bg-secondary: #f8e8e5;
     --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
