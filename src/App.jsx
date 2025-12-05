@@ -1,115 +1,109 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './App.css'; 
+import './App.css';
 
-// DEFINIÇÃO DOS TEMPOS (EM SEGUNDOS)
 const POMODORO_TIMES = {
-  pomodoro: 25 * 60, // 25 minutos
-  short: 5 * 60,     // 5 minutos
-  long: 15 * 60,    // 15 minutos
+  pomodoro: 25 * 60,
+  short: 5 * 60,
+  long: 15 * 60,
 };
 
-// Componente para os botões de modo (para Modularidade!)
-const TimerModes = ({ mode, setMode }) => {
-  return (
-    <div className="timer-modes">
-      {Object.keys(POMODORO_TIMES).map((key) => (
-        <button
-          key={key}
-          onClick={() => setMode(key)}
-          className={mode === key ? 'active' : ''}
-        >
-          {key.charAt(0).toUpperCase() + key.slice(1).replace('-', ' ')}
-        </button>
-      ))}
-    </div>
-  );
-};
+const TimerModes = ({ mode, setMode }) => (
+  <div className="timer-modes">
+    {Object.keys(POMODORO_TIMES).map((key) => (
+      <button
+        key={key}
+        onClick={() => setMode(key)}
+        className={mode === key ? 'active' : ''}
+      >
+        {key.charAt(0).toUpperCase() + key.slice(1)}
+      </button>
+    ))}
+  </div>
+);
 
 function App() {
-  // Estado para o modo atual ('pomodoro', 'short', 'long')
   const [mode, setMode] = useState('pomodoro');
-  
-  // Estado do tempo restante (inicializa com o tempo do modo atual)
-  const [timeLeft, setTimeLeft] = useState(POMODORO_TIMES[mode]);
-  
-  const [isRunning, setIsRunning] = useState(false);
-  const timerRef = useRef(null); 
 
-  // --- Efeito que redefine o tempo quando o MODO muda ---
+  // Cada modo tem seu próprio tempo
+  const [times, setTimes] = useState({
+    pomodoro: POMODORO_TIMES.pomodoro,
+    short: POMODORO_TIMES.short,
+    long: POMODORO_TIMES.long,
+  });
+
+  // Qual modo está rodando
+  const [runningMode, setRunningMode] = useState(null);
+
+  const timerRef = useRef(null);
+
+  // Timer por modo
   useEffect(() => {
-    // 1. Para o timer antigo
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    // 2. Reseta o estado
-    setIsRunning(false);
-    // 3. Define o novo tempo inicial
-    setTimeLeft(POMODORO_TIMES[mode]);
-
-  }, [mode]); // Roda sempre que o 'mode' muda!
-
-
-  // --- Lógica do Contador (Mantida) ---
-  useEffect(() => {
-    if (isRunning && timeLeft > 0) {
+    if (runningMode) {
       timerRef.current = setInterval(() => {
-        setTimeLeft(prevTime => prevTime - 1);
+        setTimes(prev => ({
+          ...prev,
+          [runningMode]: prev[runningMode] > 0 ? prev[runningMode] - 1 : 0
+        }));
       }, 1000);
 
       return () => clearInterval(timerRef.current);
     }
-    
-    if (timeLeft === 0) {
+  }, [runningMode]);
+
+  // Se o tempo chegar a zero, parar automaticamente
+  useEffect(() => {
+    if (runningMode && times[runningMode] === 0) {
       clearInterval(timerRef.current);
-      setIsRunning(false);
-      // Aqui você pode adicionar lógica para mudar para o próximo modo automaticamente!
+      setRunningMode(null);
+    }
+  }, [times, runningMode]);
+
+  const handleStartPause = () => {
+    // ⭐ Corrigido: se o tempo estiver em zero, restaura antes de iniciar
+    if (times[mode] === 0) {
+      setTimes(prev => ({
+        ...prev,
+        [mode]: POMODORO_TIMES[mode]
+      }));
     }
 
-  }, [isRunning, timeLeft]); 
+    if (runningMode === mode) {
+      setRunningMode(null); // pausar
+      return;
+    }
 
-  // --- Funções de Controle ---
-  const handleStartPause = () => {
-    setIsRunning(prev => !prev); 
+    setRunningMode(mode); // iniciar o modo atual
   };
 
   const handleReset = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
+    setTimes(prev => ({
+      ...prev,
+      [mode]: POMODORO_TIMES[mode]
+    }));
+    if (runningMode === mode) {
+      setRunningMode(null);
     }
-    setIsRunning(false);
-    setTimeLeft(POMODORO_TIMES[mode]); // Reseta para o tempo do modo atual
   };
 
-  // --- Função de Formatação ---
-  const formatTime = (totalSeconds) => {
-    const currentSeconds = Math.max(0, totalSeconds); 
-    const minutes = Math.floor(currentSeconds / 60);
-    const seconds = currentSeconds % 60;
-    
-    const paddedMinutes = String(minutes).padStart(2, '0');
-    const paddedSeconds = String(seconds).padStart(2, '0');
-    
-    return `${paddedMinutes}:${paddedSeconds}`;
+  const formatTime = (s) => {
+    const m = String(Math.floor(s / 60)).padStart(2, '0');
+    const sec = String(s % 60).padStart(2, '0');
+    return `${m}:${sec}`;
   };
 
-  const displayTime = formatTime(timeLeft);
-
-  // --- O que aparece na tela (Renderização) ---
   return (
     <div className="container">
-      {/* NOVO: Componente para mudar os modos */}
-      <TimerModes mode={mode} setMode={setMode} /> 
+      <TimerModes mode={mode} setMode={setMode} />
 
-      {/* Exibe o tempo */}
       <div className="time-display">
-        {displayTime}
+        {formatTime(times[mode])}
       </div>
 
-      {/* Botões de Controle */}
       <div className="controls">
         <button onClick={handleStartPause}>
-          {isRunning ? 'PAUSAR' : 'INICIAR'}
+          {runningMode === mode ? 'PAUSAR' : 'INICIAR'}
         </button>
+
         <button onClick={handleReset}>
           REINICIAR
         </button>
