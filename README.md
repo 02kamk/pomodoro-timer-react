@@ -1,16 +1,57 @@
-# React + Vite
+# ⏰ Trabalho ABP: Portabilidade da Aplicação Pomodoro (React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Sobre o Projeto
 
-Currently, two official plugins are available:
+Este projeto foi desenvolvido como parte da disciplina de ABP, focado na portabilidade da funcionalidade de Relógio/Timer da aplicação Pomodoro original para a biblioteca **React**. O objetivo foi demonstrar a compreensão e aplicação de conceitos fundamentais do ecossistema React, incluindo Hooks, modularidade e estilização.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ✅ Requisitos Cumpridos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+A aplicação foi desenvolvida para atender aos seguintes requisitos funcionais e técnicos:
 
-## Expanding the ESLint configuration
+| Categoria | Requisito | Status |
+| :--- | :--- | :--- |
+| **Setup & Estrutura** | Uso da stack **React** e inicialização via Vite. | ✅ Concluído |
+| **Gerenciamento de Estado** | Uso de **`useState`** para o estado do tempo e dos modos. | ✅ Concluído |
+| **Hooks e Efeitos** | Uso de **`useEffect`** para a lógica de contagem regressiva (montagem e limpeza do `setInterval`). | ✅ Concluído |
+| **Modularidade** | Divisão da UI, com a criação do componente **`TimerModes`** para seleção de tempo. | ✅ Concluído |
+| **Funcionalidade Timer** | Lógica completa de **Iniciar, Pausar e Reiniciar** o contador. | ✅ Concluído |
+| **Funcionalidade Pomodoro** | Implementação de múltiplos tempos (**Pomodoro, Short Break e Long Break**). | ✅ Concluído |
+| **Estilização / Mobile** | Design moderno, responsivo e com foco em usabilidade mobile. | ✅ Concluído |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## ⚙️ Como Executar o Projeto Localmente
+
+Para testar a aplicação em sua máquina, siga os passos no Terminal:
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/02kamk/pomodoro-timer-react.git](https://github.com/02kamk/pomodoro-timer-react.git)
+    ```
+
+2.  **Entre na pasta do projeto:**
+    ```bash
+    cd pomodoro-timer-react
+    ```
+
+3.  **Instale as dependências** (bibliotecas React):
+    ```bash
+    npm install
+    ```
+
+4.  **Ligue o servidor de desenvolvimento:**
+    ```bash
+    npm run dev
+    ```
+
+O projeto será aberto automaticamente no seu navegador, geralmente em `http://localhost:5173/`.
+
+---
+
+## 🔗 Link do Repositório (Entrega)
+
+O código-fonte completo está disponível neste repositório:
+
+[https://github.com/02kamk/pomodoro-timer-react](https://github.com/02kamk/pomodoro-timer-react)
